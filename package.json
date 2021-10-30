@@ -1,7 +1,7 @@
 {
   "name": "trading-bot",
   "version": "0.3.0",
-  "description": "A node JS trading bot that checks prices and trades cryptocurrency",
+  "description": "A node JS trading bot that checks prices and trades cryptocurrency on Uniswap",
   "engines": {
     "node": "10.x"
   },

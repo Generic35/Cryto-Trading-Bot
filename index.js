@@ -28,9 +28,10 @@ const exchangeContract = new web3.eth.Contract(EXCHANGE_ABI, EXCHANGE_ADDRESS);
 
 // Minimum eth to swap
 const ETH_AMOUNT = web3.utils.toWei('1', 'Ether')
+const ETH_AMOUNT_TO_SELL  = web3.utils.toWei('0.001', 'Ether')
 console.log("Eth Amount", ETH_AMOUNT)
 
-const ETH_SELL_PRICE = web3.utils.toWei('200', 'Ether') // 200 Dai a.k.a. $200 USD
+const ETH_SELL_PRICE = web3.utils.toWei('65', 'Ether') // 200 Dai a.k.a. $200 USD
 
 async function sellEth(ethAmount, daiAmount) {
   // Set Deadline 1 minute from now
@@ -42,7 +43,7 @@ async function sellEth(ethAmount, daiAmount) {
   // Transaction Settings
   const SETTINGS = {
     gasLimit: 8000000, // Override gas settings: https://github.com/ethers-io/ethers.js/issues/469
-    gasPrice: web3.utils.toWei('50', 'Gwei'),
+    gasPrice: web3.utils.toWei('30', 'Gwei'),
     from: process.env.ACCOUNT, // Use your account here
     value: ethAmount // Amount of Ether to Swap
   }
@@ -85,13 +86,15 @@ async function monitorPrice() {
     const price = web3.utils.fromWei(daiAmount.toString(), 'Ether')
     console.log('Eth Price:', price, ' DAI')
 
-    if(price <= ETH_SELL_PRICE) {
+		console.log('Sell price (wei) ', ETH_SELL_PRICE)
+		console.log('Sell price (Ether) ', web3.utils.fromWei(ETH_SELL_PRICE.toString()))
+    if(daiAmount <= ETH_SELL_PRICE) {
       console.log('Selling Eth...')
       // Check balance before sale
       await checkBalances()
 
       // Sell Eth
-      await sellEth(ETH_AMOUNT, daiAmount)
+      await sellEth(ETH_AMOUNT_TO_SELL, daiAmount)
 
       // Check balances after sale
       await checkBalances()
@@ -111,5 +114,5 @@ async function monitorPrice() {
 }
 
 // Check markets every n seconds
-const POLLING_INTERVAL = process.env.POLLING_INTERVAL || 1000 // 1 Second
+const POLLING_INTERVAL = process.env.POLLING_INTERVAL || 2000 // 1 Second
 priceMonitor = setInterval(async () => { await monitorPrice() }, POLLING_INTERVAL)
